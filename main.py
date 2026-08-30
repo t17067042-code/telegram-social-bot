@@ -1,7 +1,14 @@
 import logging
 import os
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    ChatMemberHandler,
+    filters,
+)
 from bot.database import Database
 from bot.handlers import BotHandlers
 from bot.antiflood import AntiFlood
@@ -9,7 +16,6 @@ from bot.antiflood import AntiFlood
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN", "").strip()
 DATABASE = os.getenv("DATABASE", "chat_social.db")
-
 MODE = os.getenv("MODE", "polling").strip().lower()
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "").strip()
 WEBHOOK_PATH = os.getenv("WEBHOOK_PATH", "/telegram").strip() or "/telegram"
@@ -64,17 +70,12 @@ def main():
     app.add_handler(CommandHandler("removegroup", h.removegroup_command))
     app.add_handler(CommandHandler("groups", h.groups_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, h.text_message))
+    app.add_handler(ChatMemberHandler(h.on_member, ChatMemberHandler.CHAT_MEMBER))
 
     if MODE == "webhook":
         if not WEBHOOK_URL:
-            raise SystemExit(
-                "MODE=webhook, но WEBHOOK_URL не задан.\n"
-                "Пример: WEBHOOK_URL=https://your-domain.com/telegram"
-            )
-        logger.info(
-            "Webhook mode: listen=%s:%s path=%s url=%s",
-            WEBHOOK_LISTEN, WEBHOOK_PORT, WEBHOOK_PATH, WEBHOOK_URL,
-        )
+            raise SystemExit("MODE=webhook требует WEBHOOK_URL")
+        logger.info("Webhook %s:%s %s", WEBHOOK_LISTEN, WEBHOOK_PORT, WEBHOOK_URL)
         app.run_webhook(
             listen=WEBHOOK_LISTEN,
             port=WEBHOOK_PORT,
@@ -85,7 +86,7 @@ def main():
         )
     else:
         logger.info("Polling mode")
-        app.run_polling(drop_pending_updates=True)
+        app.run_polling(drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
 
 
 if __name__ == "__main__":
