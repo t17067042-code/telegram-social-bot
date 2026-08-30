@@ -1,2 +1,49 @@
-# telegram-social-bot
-Telegram social moderator bot (Iris-style): profiles, rep, XP, warns, mute/ban, antiflood, RP commands
+# Telegram Social Moderator Bot
+
+Бот для групп в духе **Ирис**: профили, репутация, XP, варны, муты, баны, антифлуд, РП-команды.
+
+## Быстрый старт
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# впиши BOT_TOKEN
+python main.py
+```
+
+По умолчанию `MODE=polling` (работает везде без HTTPS).
+
+## Подключение группы
+
+1. Добавь бота в группу, сделай админом.
+2. В BotFather: Bot Settings → Group Privacy → **Turn off**.
+3. В группе: `добавить группу` или `/addgroup`.
+
+## Команды (как у Ириса)
+
+- `пинг` / `бот` — проверка
+- `кто я` / `кто ты` (ответом) / `профиль`
+- `о себе текст`
+- `реп +` / `реп -` / `респект` / `диз` (ответом)
+- РП (ответом): `обнять`, `поцеловать`, `погладить`, `пнуть`, `кусь`, `дать пять`, `похвалить`, `ударить`
+- Модерация (ответом): `мут 10 мин`, `размут`, `варн`, `снять варн`, `бан`, `кик`
+- Префиксы: `!` `.` `/` (например `!пинг`)
+
+## Бесплатный 24/7
+
+GitHub **не** держит бота онлайн. Варианты:
+
+1. **Bothost.ru** — бесплатный хостинг TG-ботов: залей zip или подключи Git, `MODE=polling`, `BOT_TOKEN=...`
+2. **Oracle Cloud Always Free** — бесплатный VPS навсегда
+3. Свой ПК / Termux (пока устройство включено)
+
+## Webhook (опционально)
+
+```env
+MODE=webhook
+WEBHOOK_URL=https://your-domain.com/telegram
+WEBHOOK_PATH=/telegram
+WEBHOOK_PORT=8080
+```
+
+Нужен публичный HTTPS.
